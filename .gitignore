@@ -1,0 +1,6 @@
+*.ipynb_checkpoints
+*__pycache__
+*.code-workspace
+mypydrive
+pyAesCrypt
+client_secrets.json
