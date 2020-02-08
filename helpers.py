@@ -56,3 +56,24 @@ def deobfuscate(password: str, ciphertext: str) -> str:
     ct = b64decode(ciphertext[12:])
     cipher = ChaCha20.new(key=key, nonce=nonce)
     return cipher.decrypt(ct).decode('utf-8')
+
+
+# difference between two nested dict that represent file system structure
+# difference(local, remote)   # return files that are local but not present on server we need to upload them
+# difference(remote, local)   # return files that are present on server but not locally and we need to download them
+def difference(d2, d1, level=0):  # d2 - d1
+    d1_folders = {ch['title']: ch for ch in d1['children'] if ch['isfolder']}
+    d1_files = [ch['title'] for ch in d1['children'] if not ch['isfolder']]
+
+    d2_folders = {ch['title']: ch for ch in d2['children'] if ch['isfolder']}
+    d2_files = [ch for ch in d2['children'] if not ch['isfolder']]
+
+    # completely new folders
+    diff_folders = [folder for folder in d2_folders.values() if folder['title'] not in d1_folders.keys()]
+    # existing folder, but they are required to be checked reqursevely
+    same_folders = [folder for folder in d2_folders.keys() if folder in d1_folders.keys()]
+
+    diff_next = [difference(d2_folders[folder], d1_folders[folder], level+1) for folder in same_folders]
+    diff_files = [file for file in d2_files if file['title'] not in d1_files]
+    return {'title': d2['title'],
+            'children': diff_folders + diff_files + diff_next}
