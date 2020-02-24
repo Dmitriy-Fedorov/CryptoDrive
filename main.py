@@ -31,6 +31,10 @@ class DriveHandler:
         child_folder.Upload()
         return child_folder['id']
 
+    def search_droot(self, folder):
+        fileList = self.drive.ListFile({'q': "'root' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"}).GetList()
+        return [{'title': f['title'], 'id': f['id']} for f in fileList if folder in f['title']]
+
     def driveListFolder(self, parent, level=0, verbose=True, indent = "|---", decipher=False):
         filelist=[]
         file_list = self.drive.ListFile({'q': f"'{parent}' in parents and trashed=false"}).GetList()
