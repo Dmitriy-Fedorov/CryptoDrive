@@ -76,4 +76,5 @@ def difference(d2, d1, level=0):  # d2 - d1
     diff_next = [difference(d2_folders[folder], d1_folders[folder], level+1) for folder in same_folders]
     diff_files = [file for file in d2_files if file['title'] not in d1_files]
     return {'title': d2['title'],
+            'isfolder': True,
             'children': diff_folders + diff_files + diff_next}
