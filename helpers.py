@@ -1,8 +1,9 @@
 import os 
 import hashlib
+import numpy as np
 from base64 import b64encode
 from base64 import b64decode
-from Crypto.Cipher import ChaCha20
+from Crypto.Cipher import ChaCha20  # pycrypto
 
 
 def mkdir(folder_name):
@@ -56,6 +57,44 @@ def deobfuscate(password: str, ciphertext: str) -> str:
     ct = b64decode(ciphertext[12:])
     cipher = ChaCha20.new(key=key, nonce=nonce)
     return cipher.decrypt(ct).decode('utf-8')
+
+
+def size_to_upload(f2upload, in_bytes=False):
+    total = np.sum([file_size(f[0], in_bytes=True) for f in f2upload])
+    if in_bytes:
+        return total
+    return file_size(total)
+
+def file_size(fname, in_bytes=False, true_bytes=True):
+    if type(fname) is str:
+        byte = os.stat(fname).st_size
+    else:
+        byte = fname
+    if in_bytes:
+        return byte
+    if byte == 0:
+        return 0
+    if true_bytes:
+        power = np.log2(byte)
+        if power < 10:
+            return f"{byte}"
+        elif power < 20:
+            return f"{byte/2**10:.2f}Kb"
+        elif power < 30:
+            return f"{byte/2**20:.2f}Mb"
+        else:
+            return f"{byte/2**30:.2f}Gb"
+    else:
+        power = np.log10(byte)
+        if power < 3:
+            return f"{byte}"
+        elif power < 6:
+            return f"{byte/1e3:.2f}Kb"
+        elif power < 9:
+            return f"{byte/1e6:.2f}Mb"
+        else:
+            return f"{byte/1e9:.2f}Gb"
+
 
 
 # difference between two nested dict that represent file system structure
