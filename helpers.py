@@ -1,8 +1,8 @@
 import os 
 import hashlib
 import numpy as np
-from base64 import b64encode
-from base64 import b64decode
+from base64 import urlsafe_b64encode
+from base64 import urlsafe_b64decode
 from Crypto.Cipher import ChaCha20  # pycrypto
 
 
@@ -34,7 +34,7 @@ def driveList2localDict(dlist, id, parent, level=0, verbose=True, indent = "|---
 
 
 def ignore(fname):
-    if fname in ['.git', ".ipynb_checkpoints", "__pycache__", "test"]:
+    if fname in ['.git', ".ipynb_checkpoints", "__pycache__"]: # , "test"
         return False
     elif fname[0] == ".":
         return False
@@ -47,20 +47,20 @@ def obfuscate(password: str, plaintext: str) -> str:
     cipher = ChaCha20.new(key=key)
     ciphertext = cipher.encrypt(plaintext.encode('utf-8'))
     
-    nonce = b64encode(cipher.nonce).decode('utf-8')
-    ct = b64encode(ciphertext).decode('utf-8')
+    nonce = urlsafe_b64encode(cipher.nonce).decode('utf-8')
+    ct = urlsafe_b64encode(ciphertext).decode('utf-8')
     return f"{nonce}{ct}"
 
 def deobfuscate(password: str, ciphertext: str) -> str:
     key = hashlib.sha256(password.encode('utf-8')).digest()
-    nonce = b64decode(ciphertext[:12])
-    ct = b64decode(ciphertext[12:])
+    nonce = urlsafe_b64decode(ciphertext[:12])
+    ct = urlsafe_b64decode(ciphertext[12:])
     cipher = ChaCha20.new(key=key, nonce=nonce)
     return cipher.decrypt(ct).decode('utf-8')
 
 
 def size_to_upload(f2upload, in_bytes=False):
-    total = np.sum([file_size(f[0], in_bytes=True) for f in f2upload])
+    total = np.sum([file_size(f"{f[0]}/{f[1]}", in_bytes=True) for f in f2upload])
     if in_bytes:
         return total
     return file_size(total)
@@ -73,7 +73,7 @@ def file_size(fname, in_bytes=False, true_bytes=True):
     if in_bytes:
         return byte
     if byte == 0:
-        return 0
+        return "0"
     if true_bytes:
         power = np.log2(byte)
         if power < 10:
