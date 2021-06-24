@@ -5,3 +5,8 @@ mypydrive
 pyAesCrypt
 client_secrets.json
 *test
+mypydrive_1/
+mypydrive_2/
+*.png
+*.jpg
+*.psd
