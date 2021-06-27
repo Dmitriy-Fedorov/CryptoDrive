@@ -1,6 +1,6 @@
 import os 
 import hashlib
-import numpy as np
+import math
 from base64 import urlsafe_b64encode
 from base64 import urlsafe_b64decode
 from Crypto.Cipher import ChaCha20  # pycrypto
@@ -59,7 +59,7 @@ def file_size(fname, in_bytes=False, true_bytes=True):
     if byte == 0:
         return "0"
     if true_bytes:
-        power = np.log2(byte)
+        power = math.log2(byte)
         if power < 10:
             return f"{byte}"
         elif power < 20:
@@ -69,7 +69,7 @@ def file_size(fname, in_bytes=False, true_bytes=True):
         else:
             return f"{byte/2**30:.2f}Gb"
     else:
-        power = np.log10(byte)
+        power = math.log10(byte)
         if power < 3:
             return f"{byte}"
         elif power < 6:

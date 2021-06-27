@@ -5,7 +5,6 @@ import pyAesCrypt
 import io
 import os
 import hashlib
-import numpy as np
 import PySimpleGUI as sg
 # import PySimpleGUIQt as sg
 import os.path
